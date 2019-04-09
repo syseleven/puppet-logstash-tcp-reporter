@@ -1,0 +1,3 @@
+manifests/init.pp a5631e2e2fc715c16f420b6a9c95eb73f25f3714
+manifests/params.pp 8285b0be2ea8a141562763e36a5e8018b06e7a33
+lib/puppet/reports/logstash_tcp.rb 0b0c70620f8c828bc81b9d2d9078a2a97f0c128f
