@@ -3,12 +3,14 @@ require:
   - rubocop-rspec
 AllCops:
   DisplayCopNames: true
-  TargetRubyVersion: '2.5'
+  TargetRubyVersion: '2.4'
   Exclude:
     - Puppetfile
     - .cache/**/*
     - modules/**/*
     - spec/fixtures/**/*
+Bundler/DuplicatedGem:
+  Enabled: false
 Lint/RescueException:
   Enabled: false
 Metrics/LineLength:
