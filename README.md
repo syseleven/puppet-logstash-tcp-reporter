@@ -27,7 +27,7 @@ class { 'logstash_tcp_reporter':
   logstash_port => 5999,
 }
 
-Add the String 'logstash_tcp' to 'reports' setting in the main section of your Puppetserver
+# Then add the String 'logstash_tcp' to 'reports' setting in the main section of your Puppetserver
 ```
 
 #### Parameters

@@ -3,8 +3,7 @@
 # @author
 #   Mike Fröhner <m.froehner@syseleven.de> www.syseleven.de
 #
-# @see
-#   https://www.github.com/syseleven/puppet-logstash-tcp-reporter
+# @see https://www.github.com/syseleven/puppet-logstash-tcp-reporter
 #
 # @param logstash_host
 #   Hostname or IP of the logstash server
@@ -23,7 +22,7 @@
 #     logstash_port => 5999,
 #   }
 #
-#   Add the String 'logstash_tcp' to 'reports' setting in the main section of your Puppetserver
+#   # Then add the String 'logstash_tcp' to 'reports' setting in the main section of your Puppetserver
 #
 class logstash_tcp_reporter (
   Stdlib::Host         $logstash_host    = '127.0.0.1',
