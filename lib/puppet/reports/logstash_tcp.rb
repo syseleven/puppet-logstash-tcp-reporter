@@ -3,9 +3,12 @@
 require 'puppet'
 require 'puppet/util'
 require 'yaml'
+require 'json'
 require 'fileutils'
 require 'date'
 require 'time'
+require 'openssl'
+require 'socket'
 
 unless Puppet.version >= '5.0.0'
   raise 'This report processor requires Puppet version 5.0.0 or later'
@@ -13,7 +16,7 @@ end
 
 Puppet::Reports.register_report(:logstash_tcp) do
   desc <<-DESCRIPTION
-  Reports metrics and logs of Puppet Runs to logstash tcp server
+  Reports metrics and logs of Puppet Runs to logstash tcp server with SSL/TLS support
   DESCRIPTION
 
   CONFIGURATION_FILE = File.join([File.dirname(Puppet.settings[:config]), 'logstash_tcp.yaml'])
@@ -64,19 +67,43 @@ Puppet::Reports.register_report(:logstash_tcp) do
       end
     end
 
-    host = YAML.load_file(CONFIGURATION_FILE)[:host]
-    port = YAML.load_file(CONFIGURATION_FILE)[:port]
-    timeout = YAML.load_file(CONFIGURATION_FILE)[:timeout]
+    logstash_host = YAML.load_file(CONFIGURATION_FILE)[:host]
+    logstash_port = YAML.load_file(CONFIGURATION_FILE)[:port]
+    logstash_timeout = YAML.load_file(CONFIGURATION_FILE)[:timeout]
+
+    ssl_enable = YAML.load_file(CONFIGURATION_FILE)[:ssl_enable]
+    ssl_cert = YAML.load_file(CONFIGURATION_FILE)[:ssl_cert]
+    ssl_key = YAML.load_file(CONFIGURATION_FILE)[:ssl_key]
+    ssl_version = YAML.load_file(CONFIGURATION_FILE)[:ssl_version]
+    ssl_ca_path = YAML.load_file(CONFIGURATION_FILE)[:ssl_ca_path]
+    ssl_ca_file = YAML.load_file(CONFIGURATION_FILE)[:ssl_ca_file]
 
     begin
-      Timeout.timeout(timeout) do
-        logstash = TCPSocket.new host.to_s, port
+      Timeout.timeout(logstash_timeout) do
+        logstash_socket = TCPSocket.new(logstash_host.to_s, logstash_port)
 
-        logstash.puts(report.to_json)
-        logstash.close
+        if ssl_enable
+          context = OpenSSL::SSL::SSLContext.new
+          context.verify_mode = OpenSSL::SSL::VERIFY_PEER
+          context.cert = OpenSSL::X509::Certificate.new(File.open(ssl_cert)) if ssl_cert != 'None'
+          context.key = OpenSSL::PKey::RSA.new(File.open(ssl_key)) if ssl_key != 'None'
+          context.ssl_version = ssl_version
+          context.ca_path = ssl_ca_path if ssl_ca_path != 'None'
+          context.ca_file = ssl_ca_file if ssl_ca_file != 'None'
+
+          logstash_socket_ssl = OpenSSL::SSL::SSLSocket.new(logstash_socket, context)
+
+          logstash_socket_ssl.connect
+          logstash_socket_ssl.puts(report.to_json)
+          logstash_socket_ssl.close
+        else
+          logstash_socket.puts(report.to_json)
+        end
+
+        logstash_socket.close
       end
     rescue Exception => e
-      Puppet.err("Failed to write to #{host} on port #{port} via tcp: #{e.message}")
+      Puppet.err("Failed to write to #{logstash_host} on port #{logstash_port} via tcp: #{e.message}")
     end
   end
 end
