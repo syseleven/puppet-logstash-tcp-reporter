@@ -22,5 +22,6 @@ describe 'logstash_tcp_reporter' do
     it { is_expected.to contain ':host: 127.0.0.1' }
     it { is_expected.to contain ':port: 5999' }
     it { is_expected.to contain ':timeout: 10' }
+    it { is_expected.to contain ':ssl_enable: Off' }
   end
 end

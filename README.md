@@ -19,22 +19,61 @@ https://www.github.com/syseleven/puppet-logstash-tcp-reporter
 
 #### Examples
 
-##### add the class to your puppetserver profile
+##### 1 - configure puppet send data to logstash without ssl
 
 ```puppet
 class { 'logstash_tcp_reporter':
-  logstash_host => 'logstash.example.com',
-  logstash_port => 5999,
+  host => 'logstash.example.com',
+  port => 5999,
 }
+```
 
-# Then add the String 'logstash_tcp' to 'reports' setting in the main section of your Puppetserver
+##### 1 - configure your logstash tcp input without ssl
+
+```puppet
+input {
+  tcp {
+    codec => json
+    host => <host> (Optional)
+    port => 5999
+    type => "puppet"
+  }
+}
+```
+
+##### 2 - send data to logstash with ssl
+
+```puppet
+class { 'logstash_tcp_reporter':
+  host       => 'logstash.example.com',
+  port       => 5999,
+  ssl_enable => true,
+}
+```
+
+##### 2 - configure your logstash tcp input with ssl
+
+```puppet
+input {
+  tcp {
+    codec => json
+    host => <host> (Optional)
+    port => 5999
+    type => "puppet"
+    ssl_enable => true
+    ssl_cert => <path to ssl cert>
+    ssl_key => <path to ssl key>
+    ssl_extra_chain_certs => [ <path to ssl chain> ]
+    ssl_verify => false (this is very important if you don't use client certificates)
+  }
+}
 ```
 
 #### Parameters
 
 The following parameters are available in the `logstash_tcp_reporter` class.
 
-##### `logstash_host`
+##### `host`
 
 Data type: `Stdlib::Host`
 
@@ -42,7 +81,7 @@ Hostname or IP of the logstash server
 
 Default value: '127.0.0.1'
 
-##### `logstash_port`
+##### `port`
 
 Data type: `Stdlib::Port`
 
@@ -50,13 +89,61 @@ Port of the logstash server
 
 Default value: 5999
 
-##### `logstash_timeout`
+##### `timeout`
 
 Data type: `Integer`
 
 Timeout in seconds to connect to the logstash server
 
 Default value: 10
+
+##### `ssl_enable`
+
+Data type: `Boolean`
+
+Enable SSL/TLS support
+
+Default value: `false`
+
+##### `ssl_cert`
+
+Data type: `Optional[Stdlib::Absolutepath]`
+
+Client certificate path
+
+Default value: `undef`
+
+##### `ssl_key`
+
+Data type: `Optional[Stdlib::Absolutepath]`
+
+Client certificate path
+
+Default value: `undef`
+
+##### `ssl_version`
+
+Data type: `String`
+
+SSL version for connection to logstash server
+
+Default value: ':TLSv1_2'
+
+##### `ssl_ca_path`
+
+Data type: `Stdlib::Absolutepath`
+
+directory path of CA certificates
+
+Default value: '/etc/ssl/certs'
+
+##### `ssl_ca_file`
+
+Data type: `Optional[Stdlib::Absolutepath]`
+
+file path of a CA certificate
+
+Default value: '/etc/ssl/certs/ca-certificates.crt'
 
 ##### `config_owner`
 

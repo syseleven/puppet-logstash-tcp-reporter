@@ -1,8 +1,8 @@
 {
   "name": "syseleven-logstash_tcp_reporter",
-  "version": "0.9.0",
+  "version": "0.9.5",
   "author": "SysEleven GmbH",
-  "summary": "Installs and configures a reporter to push metrics and logs of Puppet Runs to logstash tcp server",
+  "summary": "Installs and configures a reporter to send metrics and logs of Puppet Runs to logstash tcp server",
   "license": "Apache-2.0",
   "source": "https://github.com/syseleven/puppet-logstash-tcp-reporter",
   "project_page": "https://github.com/syseleven/puppet-logstash-tcp-reporter",

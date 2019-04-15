@@ -1,4 +1,30 @@
 ---
-:host: <%= @logstash_host %>
-:port: <%= @logstash_port %>
-:timeout: <%= @logstash_timeout %>
+:host: <%= @host %>
+:port: <%= @port %>
+:timeout: <%= @timeout %>
+<% if @ssl_enable -%>
+:ssl_enable: On
+:ssl_version: <%= @ssl_version %>
+<% if @ssl_ca_path -%>
+:ssl_ca_path: <%= @ssl_ca_path %>
+<% else -%>
+:ssl_ca_path: None
+<% end -%>
+<% if @ssl_ca_file -%>
+:ssl_ca_file: <%= @ssl_ca_file %>
+<% else -%>
+:ssl_ca_file: None
+<% end -%>
+<% if @ssl_cert -%>
+:ssl_cert: <%= @ssl_cert %>
+<% else -%>
+:ssl_cert: None
+<% end -%>
+<% if @ssl_key -%>
+:ssl_key: <%= @ssl_key %>
+<% else -%>
+:ssl_key: None
+<% end -%>
+<% else -%>
+:ssl_enable: Off
+<% end -%>
